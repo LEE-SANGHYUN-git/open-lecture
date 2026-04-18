@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Course {
+  id           Int              @id @default(autoincrement())
+  title        String
+  description  String
+  platform     String           // "inflearn", "youtube", "kmooc", "kocw", "udemy"
+  url          String
+  thumbnailUrl String?
+  instructor   String
+  difficulty   String           @default("beginner") // beginner, intermediate, advanced
+  rating       Float?
+  durationMin  Int?
+  language     String           @default("ko")
+  isFree       Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  categories   CourseCategory[]
+}
+
+model Category {
+  id      Int              @id @default(autoincrement())
+  name    String           @unique
+  slug    String           @unique
+  courses CourseCategory[]
+}
+
+model CourseCategory {
+  courseId    Int
+  categoryId Int
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([courseId, categoryId])
+}
